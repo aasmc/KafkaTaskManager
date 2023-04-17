@@ -1,1 +1,27 @@
+server:
+  port: 8081
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092, localhost:39092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      bootstrap-servers: localhost:29092, localhost:39092
+  datasource:
+    username: user
+    password: password
+    url: jdbc:postgresql://localhost:5432/tasksdb
+    hikari:
+      connection-timeout: 2000
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
+
+
 
