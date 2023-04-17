@@ -23,5 +23,8 @@ spring:
         format_sql: true
         show_sql: true
 
-
-
+events:
+  topic-name: "eventsTopic"
+  num-partitions: 4
+  num-replicas: 2
+sendInterval: "* * * * *"
