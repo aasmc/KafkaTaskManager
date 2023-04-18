@@ -22,8 +22,7 @@ class KafkaEventConsumer(
     fun consume(record: ConsumerRecord<String, String>) {
         log.info("Consuming message from Kafka topic {}", record.topic())
         val recordNode = objectMapper.readTree(record.value())
-        val payloadNode = recordNode.get("payload")
-        val afterNode = payloadNode.get("after")
+        val afterNode = recordNode.get("after")
         val event = objectMapper.treeToValue(afterNode, EventDto::class.java)
         log.info("Received event from Kafka {}", event)
         val savedEvent = eventRepository.save(event.toDomain())
