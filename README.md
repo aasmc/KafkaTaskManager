@@ -1,5 +1,21 @@
 # Kafka Task Manager
 
+Educational project created with the goal of learning Kafka Connect with Debezium.
+
+For now, user can create/update/delete/get Task from TaskManager microservice.
+At the same time TaskManager microservice saves CRUD events to a separate table used by Debezium as
+a source of messages for Kafka. When a row changes in the events table, a message is sent to the Kafka topic 
+events.public.events.
+
+HistoryManager microservice tracks all events by listening to the Kafka topic and saves the events
+to its database. 
+
+## TBD
+1. Let user retrieve history of task changes.
+2. Validate task intersection (only one task at a time is allowed)
+3. Add different types of tasks: Epic, SubTask
+4. Create a gateway with all endpoints
+
 ## Preparing the environment:
 To prepare the environment, go to the **docker** folder and execute:
 ```bash
@@ -21,5 +37,4 @@ curl -i -X POST -H "Accept:application/json" \
 http://localhost:8083/connectors/ \
 -d @debezium-postgres.json
 ```
-
-Start TaskManager application. 
+After that you are ready to start microservices. 
