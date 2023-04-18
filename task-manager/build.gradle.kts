@@ -29,10 +29,14 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.kafka:spring-kafka")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+
+    annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
+
 }
 
 tasks.withType<KotlinCompile> {

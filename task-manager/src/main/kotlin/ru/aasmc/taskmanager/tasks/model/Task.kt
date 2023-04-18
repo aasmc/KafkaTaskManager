@@ -7,13 +7,14 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@Table(name = "tasks")
 class Task(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
     var id: Long,
 
-    @Column(nullable = false)
+    @Column(name = "task_name", nullable = false)
     var name: String,
 
     @Column(nullable = false)

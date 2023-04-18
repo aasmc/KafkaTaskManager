@@ -1,1 +1,30 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: history-manager
+  kafka:
+    bootstrap-servers: localhost:29092,localhost:39092
+    consumer:
+      bootstrap-servers: localhost:29092,localhost:39092
+      group-id: ${spring.application.name}
+      auto-offset-reset: earliest
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  datasource:
+    username: user
+    password: password
+    url: jdbc:postgresql://localhost:5433/historydb
+    hikari:
+      connection-timeout: 2000
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
 
+topicName: "events.public.events"

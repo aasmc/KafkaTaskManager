@@ -2,6 +2,7 @@ version: "3.8"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: "zookeeper"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -10,6 +11,7 @@ services:
 
   kafka-1:
     image: confluentinc/cp-kafka:latest
+    container_name: "kafka-1"
     depends_on:
       - zookeeper
     ports:
@@ -25,6 +27,7 @@ services:
       JMX_PORT: 1099
   kafka-2:
     image: confluentinc/cp-kafka:latest
+    container_name: "kafka-2"
     depends_on:
       - zookeeper
     ports:
@@ -39,8 +42,35 @@ services:
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-1 -Dcom.sun.management.jmxremote.rmi.port=1099"
       JMX_PORT: 1099
 
-  tasks-postgres:
+#  kafka-3:
+#    image: confluentinc/cp-kafka:latest
+#    container_name: "kafka-3"
+#    depends_on:
+#      - zookeeper
+#    ports:
+#      - 49092:49092
+#    environment:
+#      KAFKA_BROKER_ID: 3
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092,PLAINTEXT_HOST://localhost:49092
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+#      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-1 -Dcom.sun.management.jmxremote.rmi.port=1099"
+#      JMX_PORT: 1099
+
+  history-postgres:
     image: "postgres:15.2"
+    container_name: "history-postgres"
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=historydb
+
+  tasks-postgres:
+    image: debezium/postgres:13
     container_name: "tasks-postgres"
     ports:
       - 5432:5432
@@ -48,10 +78,11 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts:/docker-entrypoint-initdb.d
 
   cmak:
     image: ghcr.io/eshepelyuk/dckr/cmak-3.0.0.5:latest
+    container_name: "cmak"
     restart: always
     ports:
       - "9000:9000"
@@ -61,3 +92,20 @@ services:
       - zookeeper
       - kafka-1
       - kafka-2
+
+  kafkaconnect:
+    container_name: "debezium-connect"
+    image: debezium/connect
+    ports:
+      - 8083:8083
+    depends_on:
+      - zookeeper
+      - kafka-1
+      - kafka-2
+      - tasks-postgres
+    environment:
+      GROUP_ID: 1
+      BOOTSTRAP_SERVERS: kafka-1:9092, kafka-2:9092
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses

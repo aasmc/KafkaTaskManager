@@ -1,2 +1,0 @@
-CREATE DATABASE tasksdb;
-CREATE DATABASE historydb;

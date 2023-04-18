@@ -1,12 +1,6 @@
 server:
-  port: 8081
+  port: 8082
 spring:
-  kafka:
-    bootstrap-servers: localhost:29092, localhost:39092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      bootstrap-servers: localhost:29092, localhost:39092
   datasource:
     username: user
     password: password
@@ -22,9 +16,3 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
-
-events:
-  topic-name: "eventsTopic"
-  num-partitions: 4
-  num-replicas: 2
-sendInterval: "* * * * *"

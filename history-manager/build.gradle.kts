@@ -32,6 +32,9 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+
+    annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
+
 }
 
 tasks.withType<KotlinCompile> {
