@@ -13,8 +13,8 @@ class Event(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @Column(name = "task_id", nullable = false)
-        var taskId: Long,
+        @Embedded
+        var taskInfo: TaskInfo,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
         @Column(name = "event_date", nullable = false)
@@ -29,6 +29,6 @@ class Event(
         var version: Int = 0
 ) {
     override fun toString(): String {
-        return "Event: [id=$id, taskId=$taskId, eventDate=$eventDate, eventType=$eventType]"
+        return "Event: [id=$id, taskId=${taskInfo.taskId}, eventDate=$eventDate, eventType=$eventType]"
     }
 }

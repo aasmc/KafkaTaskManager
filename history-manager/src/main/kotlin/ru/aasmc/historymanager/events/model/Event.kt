@@ -12,8 +12,8 @@ class Event(
         @Id
         var id: Long,
 
-        @Column(name = "task_id", nullable = false)
-        var taskId: Long,
+        @Column(name = "task_info", nullable = false)
+        var taskInfo: TaskInfo,
 
         @Column(name = "event_date", nullable = false)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
@@ -28,6 +28,6 @@ class Event(
         var version: Int = 0
 ) {
     override fun toString(): String {
-        return "Event: [id=$id, taskId=$taskId, eventDate=$eventDate, eventType=$eventType]"
+        return "Event: [id=$id, taskId=${taskInfo.taskId}, eventDate=$eventDate, eventType=$eventType]"
     }
 }
