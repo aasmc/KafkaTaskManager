@@ -18,7 +18,7 @@ class KafkaEventConsumer(
         val log = LoggerFactory.getLogger(KafkaEventConsumer::class.java)
     }
 
-    @KafkaListener(topics = ["\${topicName}"], groupId = "\${spring.application.name}", autoStartup = "true")
+    @KafkaListener(topics = ["\${events.topicName}"], groupId = "\${spring.application.name}", autoStartup = "true")
     fun consume(record: ConsumerRecord<String, String>) {
         log.info("Consuming message from Kafka topic {}", record.topic())
         val recordNode = objectMapper.readTree(record.value())

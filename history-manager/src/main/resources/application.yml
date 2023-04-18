@@ -27,4 +27,5 @@ spring:
         format_sql: true
         show_sql: true
 
-topicName: "events.public.events"
+events:
+  topicName: "events.public.events"
