@@ -1,12 +1,10 @@
-package ru.aasmc.taskmanager
+package ru.aasmc.taskvalidator
 
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-@Disabled
-class TaskManagerApplicationTests {
+class TaskValidatorApplicationTests {
 
     @Test
     fun contextLoads() {

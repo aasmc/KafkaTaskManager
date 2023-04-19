@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.format.annotation.DateTimeFormat
 import ru.aasmc.taskmanager.events.model.TaskInfo
 import ru.aasmc.taskmanager.util.DateProcessor
+import java.time.Duration
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -44,6 +45,11 @@ class Task(
         return "Task: [id=$id, name=$name, description=$description," +
                 " taskStatus=$taskStatus, taskType=$taskType, " +
                 "duration=$duration, startTime=$startTime]"
+    }
+
+    fun getEndTime(): LocalDateTime {
+        val duration = Duration.ofMinutes(duration)
+        return startTime.plus(duration)
     }
 }
 

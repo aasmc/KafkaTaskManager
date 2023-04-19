@@ -10,7 +10,7 @@
     "database.dbname" : "tasksdb",
     "database.server.name": "pg-dev",
     "topic.prefix": "events",
-    "table.include.list": "public.events",
+    "table.include.list": "public.crud_events",
     "heartbeat.interval.ms": "5000",
     "slot.name": "dbname_debezium",
     "publication.name": "events_publication"

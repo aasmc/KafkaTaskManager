@@ -1,8 +1,10 @@
 server:
-  port: 8082
+  port: 8084
 spring:
+  application:
+    name: "task-validator"
   kafka:
-    bootstrap-servers: localhost:29092,localhost:39092
+    bootstrap-servers: localhost:29092, localhost:39092
     producer:
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -12,14 +14,13 @@ spring:
       auto-offset-reset: latest
       bootstrap-servers: localhost:29092, localhost:39092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: ${spring.application.name}
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: "*"
   datasource:
     username: user
     password: password
-    url: jdbc:postgresql://localhost:5432/tasksdb
+    url: jdbc:postgresql://localhost:5434/validatordb
     hikari:
       connection-timeout: 2000
       maximum-pool-size: 5
@@ -33,12 +34,4 @@ spring:
         show_sql: true
 
 topicprops:
-  partitions: 2
-  replicas: 2
   validateRequestTopic: "validate-request"
-  validateResponseTopic: "validate-response"
-  deleteTaskValidationTopic: "delete-task-validation"
-  replyTimeoutSeconds: 10
-
-urls:
-  validator: http://localhost:8084

@@ -69,6 +69,16 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=historydb
 
+  validator-postgres:
+    image: "postgres:15.2"
+    container_name: "validator-postgres"
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=validatordb
+
   tasks-postgres:
     image: debezium/postgres:13
     container_name: "tasks-postgres"
@@ -105,7 +115,7 @@ services:
       - tasks-postgres
     environment:
       GROUP_ID: 1
-      BOOTSTRAP_SERVERS: kafka-1:9092, kafka-2:9092
+      BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses

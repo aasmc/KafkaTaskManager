@@ -1,17 +1,15 @@
-package ru.aasmc.taskmanager
+package ru.aasmc.taskvalidator
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
-import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.kafka.annotation.EnableKafka
 
 @SpringBootApplication
-@ConfigurationPropertiesScan
 @EnableKafka
-@EnableFeignClients
-class TaskManagerApplication
+@ConfigurationPropertiesScan
+class TaskValidatorApplication
 
 fun main(args: Array<String>) {
-    runApplication<TaskManagerApplication>(*args)
+    runApplication<TaskValidatorApplication>(*args)
 }

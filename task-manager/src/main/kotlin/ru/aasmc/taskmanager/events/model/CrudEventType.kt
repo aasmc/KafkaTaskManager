@@ -1,6 +1,6 @@
 package ru.aasmc.taskmanager.events.model
 
-enum class EventType {
+enum class CrudEventType {
     TASK_CREATED,
     TASK_UPDATED,
     TASK_DELETED,
