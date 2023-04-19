@@ -1,6 +1,8 @@
 server:
   port: 8082
 spring:
+  application:
+    name: task-manager
   kafka:
     bootstrap-servers: localhost:29092,localhost:39092
     producer:
@@ -12,10 +14,8 @@ spring:
       auto-offset-reset: latest
       bootstrap-servers: localhost:29092, localhost:39092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: ${spring.application.name}
-      properties:
-        spring.json.trusted.packages: "*"
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${topicprops.groupId}
   datasource:
     username: user
     password: password
@@ -37,8 +37,8 @@ topicprops:
   replicas: 2
   validateRequestTopic: "validate-request"
   validateResponseTopic: "validate-response"
-  deleteTaskValidationTopic: "delete-task-validation"
   replyTimeoutSeconds: 10
+  groupId: "validation-group"
 
 urls:
   validator: http://localhost:8084

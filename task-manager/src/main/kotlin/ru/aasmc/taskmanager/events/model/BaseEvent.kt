@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat
 import ru.aasmc.taskmanager.util.DateProcessor
 import java.io.Serializable
 import java.time.LocalDateTime
-import java.util.Objects
+import java.util.*
 import javax.persistence.*
 
 @MappedSuperclass

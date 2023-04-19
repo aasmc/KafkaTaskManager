@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@Table(name = "ranges")
 class Range(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)

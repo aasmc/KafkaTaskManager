@@ -10,6 +10,6 @@ class TopicProperties @ConstructorBinding constructor(
         var validateRequestTopic: String,
         var validateResponseTopic: String,
         var replyTimeoutSeconds: Long,
-        var deleteTaskValidationTopic: String,
+        var groupId: String
 ) {
 }

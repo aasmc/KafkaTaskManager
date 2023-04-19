@@ -17,7 +17,7 @@ class KafkaReplyService(
 ) {
 
     // KafkaListener echoes the correlation ID and determines the reply topic
-    @KafkaListener(groupId = "\${spring.application.name}", topics = ["\${topicprops.validateRequestTopic}"])
+    @KafkaListener(topics = ["\${topicprops.validateRequestTopic}"])
     @SendTo
     fun listen(record: ConsumerRecord<String, String>): Message<*> {
         val requestStr = record.value()

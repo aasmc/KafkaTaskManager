@@ -22,7 +22,7 @@ class ValidationService(
     fun validate(request: ValidationRequest): ValidationResponse {
         log.info("Started validation of request: $request")
         val overlappings =
-                repo.findAllByStartBeforeAndEndAfter(request.taskStartTime, request.taskEndTime)
+                repo.findAllOverlappings(request.taskStartTime, request.taskEndTime)
         log.info("Found ranges with intersection: $overlappings")
         val result = if (overlappings.isEmpty()) {
             ValidationResult.SUCCESS

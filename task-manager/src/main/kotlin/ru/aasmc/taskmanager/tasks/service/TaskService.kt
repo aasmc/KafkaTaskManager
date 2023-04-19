@@ -71,23 +71,19 @@ class TaskService(
 
     // TODO add retries
     private fun validateTask(task: Task) {
-        validationService.requestValidation(task.startTime,
+        val response = validationService.requestValidation(task.startTime,
                 task.getEndTime(),
-                task.id,
-                onSuccess = { record ->
-                    record?.value()?.let { response ->
-                        if (validationFailed(response)) {
-                            throw TaskIntersectionException("Task with id ${task.id} intersects with other tasks.\n" +
-                                    "Only one task at a time is allowed!")
-                        }
-                    } ?: throw RuntimeException("Unknown Server Error while sending validation" +
-                            " request to Kafka and receiving validation response " +
-                            "for task with id ${task.id}")
-                },
-                onFailure = { ex ->
-                    throw RuntimeException(ex.cause)
-                }
+                task.id
         )
+
+        response?.let { resp ->
+            if (validationFailed(resp)) {
+                throw TaskIntersectionException("Task with id ${task.id} intersects with other tasks.\n" +
+                        "Only one task at a time is allowed!")
+            }
+        } ?: throw RuntimeException("Unknown Server Error while sending validation" +
+                " request to Kafka and receiving validation response " +
+                "for task with id ${task.id}")
     }
 
     private fun validationFailed(response: ValidationResponse): Boolean {

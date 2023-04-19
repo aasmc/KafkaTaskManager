@@ -28,4 +28,4 @@ spring:
         show_sql: true
 
 events:
-  topicName: "events.public.events"
+  topicName: "events.public.crud_events"
