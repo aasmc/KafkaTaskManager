@@ -38,9 +38,10 @@ docker-compose up -d
 It brings up the following containers:
 1. Kafka (2 brokers)
 2. ZooKeeper
-3. postgres (2 instances: one for TaskManager microservice, one for HistoryManager microservice)
+3. postgres (3 instances: one for TaskManager microservice, one for HistoryManager microservice, one for Kadeck)
 4. cmak (UI for managing Kafka cluster)
 5. Debezium Kafka connector
+6. Kadeck (another UI to track what's happening in Kafka)
 
 After the containers are up and running, connect Debezium with Postgres by executing the following 
 script from the **connector** directory:
