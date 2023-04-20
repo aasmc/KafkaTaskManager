@@ -18,7 +18,6 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: "ru.aasmc.taskvalidator.dto.ValidationRequest"
-
       group-id: ${topicprops.groupId}
   datasource:
     username: user

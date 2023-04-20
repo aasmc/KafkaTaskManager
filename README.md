@@ -20,6 +20,62 @@ To allow for multiple instances of TaskManager in the role of the Kafka Consumer
 each instance. Instances will therefore consume all messages from all partitions of the reply topic, but will react
 only to those messages which they sent. This is achieved by KafkaHeaders.CORRELATION_ID. 
 
+To enable multiple TaskManager consumers we need to specify unique group.id Kafka property. And there's a problem
+with deserializing Json response. Below is the map of consumer properties in TaskManager with more detailed explanation:
+
+```kotlin
+    @Bean
+    fun consumerConfig(): Map<String, Any?> {
+        return hashMapOf(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaProperties.bootstrapServers,
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to JsonDeserializer::class.java,
+                // If Consumer group.id is not set to a random value, we have a problem:
+                // when multiple instances of TaskManager (aka producer of validation requests, and
+                // consumer of validation responses) are up, each of them needs to consume only its own
+                // messages - this is achieved by KafkaHeaders.CORRELATION_ID, but if each instance is in
+                // the same Consumer Group, then it will consume messages only from a specific partition,
+                // so we may lose some reply messages, which causes a TimeoutException.
+                // Spring Docs say: When configuring with a single reply topic, each instance must use
+                // a different group.id. In this case, all instances receive each reply,
+                // but only the instance that sent the request finds the correlation ID.
+                // For more details see: https://docs.spring.io/spring-kafka/reference/html/#replying-template
+                // Although it is said that ContainerProperties.setGroupId() overrides any {@code group.id} property
+                // provided by the consumer factory configuration, this doesn't seem to work. So I had to
+                // write custom ConsumerFactory bean and set consumer group.id to a random value here.
+                ConsumerConfig.GROUP_ID_CONFIG to "$applicationName-${UUID.randomUUID()}",
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to kafkaProperties.consumerAutoReset,
+                // Don't use typeId from Kafka, because in response/reply pattern it causes errors
+                // while deserializing received ConsumerRecord. To achieve proper behaviour, we need to add
+                // default type for deserialization, and tell Jackson to ignore type headers.
+                JsonDeserializer.VALUE_DEFAULT_TYPE to ValidationResponse::class.java,
+                JsonDeserializer.USE_TYPE_INFO_HEADERS to false
+        )
+    }
+```
+
+Kafka consumer in Validation microservice must also be properly configured to handle deserialization. Below is the 
+application.yml config:
+```yaml
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092, localhost:39092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bootstrap-servers: localhost:29092, localhost:39092
+    consumer:
+      auto-offset-reset: latest
+      bootstrap-servers: localhost:29092, localhost:39092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "ru.aasmc.taskvalidator.dto.ValidationRequest"
+      group-id: ${topicprops.groupId}
+```
+
 
 ## TBD
 1. Let user retrieve history of task changes.
