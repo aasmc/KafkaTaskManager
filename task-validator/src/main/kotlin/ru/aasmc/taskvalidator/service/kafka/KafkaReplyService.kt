@@ -1,6 +1,5 @@
 package ru.aasmc.taskvalidator.service.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.KafkaHeaders
@@ -13,16 +12,14 @@ import ru.aasmc.taskvalidator.service.ValidationService
 
 @Service
 class KafkaReplyService(
-        private val validationService: ValidationService,
-        private val objectMapper: ObjectMapper
+        private val validationService: ValidationService
 ) {
 
     // KafkaListener echoes the correlation ID and determines the reply topic
     @KafkaListener(topics = ["\${topicprops.validateRequestTopic}"])
     @SendTo
-    fun listen(record: ConsumerRecord<String, String>): Message<*> {
-        val requestStr = record.value()
-        val request = objectMapper.readValue(requestStr, ValidationRequest::class.java)
+    fun listen(record: ConsumerRecord<String, ValidationRequest>): Message<*> {
+        val request = record.value()
         val response = validationService.validate(request)
         val correlationId = extractHeader(KafkaHeaders.CORRELATION_ID, record)
         val replyTopic = extractHeader(KafkaHeaders.REPLY_TOPIC, record)
@@ -34,7 +31,7 @@ class KafkaReplyService(
                 .build()
     }
 
-    private fun extractHeader(key: String, record: ConsumerRecord<String, String>): ByteArray {
+    private fun extractHeader(key: String, record: ConsumerRecord<String, ValidationRequest>): ByteArray {
         return record.headers().lastHeader(key).value()
     }
 

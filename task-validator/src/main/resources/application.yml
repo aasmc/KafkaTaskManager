@@ -14,7 +14,11 @@ spring:
       auto-offset-reset: latest
       bootstrap-servers: localhost:29092, localhost:39092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "ru.aasmc.taskvalidator.dto.ValidationRequest"
+
       group-id: ${topicprops.groupId}
   datasource:
     username: user

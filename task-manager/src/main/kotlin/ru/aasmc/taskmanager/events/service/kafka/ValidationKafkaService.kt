@@ -1,6 +1,5 @@
 package ru.aasmc.taskmanager.events.service.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
@@ -14,9 +13,8 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class ValidationKafkaService(
-        private val replyTemplate: ReplyingKafkaTemplate<String, ValidationRequest, String>,
+        private val replyTemplate: ReplyingKafkaTemplate<String, ValidationRequest, ValidationResponse>,
         private val kafkaProperties: KafkaProperties,
-        private val objectMapper: ObjectMapper
 ) {
 
     companion object {
@@ -44,9 +42,7 @@ class ValidationKafkaService(
                 Duration.ofSeconds(kafkaProperties.replyTimeoutSeconds))
         log.debug("Send result from Kafka {}", sendResult)
         val response = sendResult.get(kafkaProperties.replyTimeoutSeconds, TimeUnit.SECONDS)
-        return response?.value()?.let { resp ->
-            objectMapper.readValue(resp, ValidationResponse::class.java)
-        }
+        return response?.value()
     }
 
 }
