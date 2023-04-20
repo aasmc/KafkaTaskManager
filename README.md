@@ -16,6 +16,11 @@ TaskManager configures ReplyingKafkaTemplate to send validation requests to a Ka
 response from Validation microservice, which consumes messages from the topic, validates the request and
 sends back request to another Kafka topic validate-response (configured in ReplyingKafkaTemplate). 
 
+To allow for multiple instances of TaskManager in the role of the Kafka Consumer, we need to specify unique group.id for
+each instance. Instances will therefore consume all messages from all partitions of the reply topic, but will react
+only to those messages which they sent. This is achieved by KafkaHeaders.CORRELATION_ID. 
+
+
 ## TBD
 1. Let user retrieve history of task changes.
 2. Validate task intersection (only one task at a time is allowed) DONE for Task
@@ -61,3 +66,9 @@ http://localhost:8082/tasks/ \
 ```
 
 To check that the validation works, execute them several times. 
+
+## Known issues:
+
+1. Debezium fails to create partitions and replicas for topic events.public.crud_events, although configs for the topic
+is specified in the json debezium configuration. Solution - manually create topic in TaskManager microservice
+(since it's where the Debezium connector is reading its data). 

@@ -1,0 +1,8 @@
+{
+  "name": "Task Six",
+  "description": "Task Six Description",
+  "taskStatus": "NEW",
+  "taskType": "TASK",
+  "duration": 10000,
+  "startTime": "2023-10-18 12:24"
+}

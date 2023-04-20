@@ -13,6 +13,15 @@
     "table.include.list": "public.crud_events",
     "heartbeat.interval.ms": "5000",
     "slot.name": "dbname_debezium",
-    "publication.name": "events_publication"
+    "publication.name": "events_publication",
+    "topic.creation.default.replication.factor": 2,
+    "topic.creation.default.partitions": 10,
+    "topic.creation.groups": "eventsgroup",
+    "topic.creation.eventsgroup.include": "events\\.*",
+    "topic.creation.eventsgroup.replication.factor": 2,
+    "topic.creation.eventsgroup.partitions": 10,
+    "topic.creation.eventsgroup.cleanup.policy": "delete",
+    "topic.creation.eventsgroup.retention.ms": 7776000000,
+    "topic.creation.eventsgroup.compression.type": "lz4"
   }
 }

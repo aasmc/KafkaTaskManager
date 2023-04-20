@@ -7,7 +7,7 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
 import org.springframework.stereotype.Service
 import ru.aasmc.taskmanager.events.dto.ValidationRequest
 import ru.aasmc.taskmanager.events.dto.ValidationResponse
-import ru.aasmc.taskmanager.events.service.kafka.props.TopicProperties
+import ru.aasmc.taskmanager.events.service.kafka.props.KafkaProperties
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 @Service
 class ValidationKafkaService(
         private val replyTemplate: ReplyingKafkaTemplate<String, ValidationRequest, String>,
-        private val topicProperties: TopicProperties,
+        private val kafkaProperties: KafkaProperties,
         private val objectMapper: ObjectMapper
 ) {
 
@@ -36,14 +36,14 @@ class ValidationKafkaService(
         )
 
         val producerRecord = ProducerRecord<String, ValidationRequest>(
-                topicProperties.validateRequestTopic,
+                kafkaProperties.validateRequestTopic,
                 validationRequest
         )
 
         val sendResult = replyTemplate.sendAndReceive(producerRecord,
-                Duration.ofSeconds(topicProperties.replyTimeoutSeconds))
+                Duration.ofSeconds(kafkaProperties.replyTimeoutSeconds))
         log.debug("Send result from Kafka {}", sendResult)
-        val response = sendResult.get(topicProperties.replyTimeoutSeconds, TimeUnit.SECONDS)
+        val response = sendResult.get(kafkaProperties.replyTimeoutSeconds, TimeUnit.SECONDS)
         return response?.value()?.let { resp ->
             objectMapper.readValue(resp, ValidationResponse::class.java)
         }

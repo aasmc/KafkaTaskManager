@@ -5,17 +5,17 @@ spring:
     name: task-manager
   kafka:
     bootstrap-servers: localhost:29092,localhost:39092
-    producer:
-      acks: all
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      bootstrap-servers: localhost:29092, localhost:39092
-    consumer:
-      auto-offset-reset: latest
-      bootstrap-servers: localhost:29092, localhost:39092
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: ${topicprops.groupId}
+#    producer:
+#      acks: all
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#      bootstrap-servers: localhost:29092, localhost:39092
+#    consumer:
+#      auto-offset-reset: latest
+#      bootstrap-servers: localhost:29092, localhost:39092
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      group-id: ${topicprops.groupId}
   datasource:
     username: user
     password: password
@@ -38,7 +38,9 @@ topicprops:
   validateRequestTopic: "validate-request"
   validateResponseTopic: "validate-response"
   replyTimeoutSeconds: 10
-  groupId: "validation-group"
-
+  bootstrapServers: "localhost:29092,localhost:39092"
+  consumerAutoReset: "latest"
+  producerAckConfig: "1"
+  debeziumOutboxTopicName: "events.public.crud_events"
 urls:
   validator: http://localhost:8084
