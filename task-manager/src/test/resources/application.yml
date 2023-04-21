@@ -1,21 +1,4 @@
-server:
-  port: 8082
 spring:
-  application:
-    name: task-manager
-  kafka:
-    bootstrap-servers: localhost:29092,localhost:39092
-#    producer:
-#      acks: all
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#      bootstrap-servers: localhost:29092, localhost:39092
-#    consumer:
-#      auto-offset-reset: latest
-#      bootstrap-servers: localhost:29092, localhost:39092
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      group-id: ${topicprops.groupId}
   datasource:
     username: user
     password: password

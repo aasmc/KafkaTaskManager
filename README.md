@@ -82,6 +82,8 @@ spring:
 2. Validate task intersection (only one task at a time is allowed) DONE for Task
 3. Add different types of tasks: Epic, SubTask
 4. Create a gateway with all endpoints
+5. Error Handling
+6. Tests
 
 
 
