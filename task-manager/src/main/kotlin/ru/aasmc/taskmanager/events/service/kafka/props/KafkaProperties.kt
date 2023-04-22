@@ -15,19 +15,4 @@ class KafkaProperties @ConstructorBinding constructor(
         var consumerAutoReset: String,
         var producerAckConfig: String,
         var debeziumOutboxTopicName: String,
-        var deadLetter: DeadLetter,
-        var backoff: Backoff
-) {
-}
-
-class DeadLetter(
-        var retention: Duration,
-        var suffix: String
-)
-
-class Backoff(
-        var initialInterval: Duration,
-        var maxInterval: Duration,
-        var maxRetries: Int,
-        var multiplier: Double
 )

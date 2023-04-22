@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:14.4:///
+kafkaprops:
+  partitions: 2
+  replicas: 2
+  groupId: ${spring.application.name}
+  validateRequestTopic: "validate-request"
+  bootstrapServers: localhost:29092, localhost:39092
+  producerAck: 1
+  consumerAutoOffsetReset: latest
+  backoff:
+    initial-interval: 500ms
+    max-interval: 2s
+    max-retries: 4
+    multiplier: 1.5
+  deadletter:
+    retention: 28d
+    suffix: .DLT

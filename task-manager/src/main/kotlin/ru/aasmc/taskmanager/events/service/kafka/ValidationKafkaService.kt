@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class ValidationKafkaService(
-        private val replyTemplate: ReplyingKafkaTemplate<String, ValidationRequest, ValidationResponse>,
-        private val kafkaProperties: KafkaProperties,
+    private val replyTemplate: ReplyingKafkaTemplate<String, ValidationRequest, ValidationResponse>,
+    private val kafkaProperties: KafkaProperties
 ) {
 
     companion object {
@@ -22,24 +22,26 @@ class ValidationKafkaService(
     }
 
     fun requestValidation(
-            startTime: LocalDateTime,
-            endTime: LocalDateTime,
-            taskId: Long
+        startTime: LocalDateTime,
+        endTime: LocalDateTime,
+        taskId: Long
     ): ValidationResponse? {
         log.info("Start sending validation request to Kafka.")
         val validationRequest = ValidationRequest(
-                taskStartTime = startTime,
-                taskEndTime = endTime,
-                taskId = taskId
+            taskStartTime = startTime,
+            taskEndTime = endTime,
+            taskId = taskId
         )
 
         val producerRecord = ProducerRecord<String, ValidationRequest>(
-                kafkaProperties.validateRequestTopic,
-                validationRequest
+            kafkaProperties.validateRequestTopic,
+            validationRequest
         )
 
-        val sendResult = replyTemplate.sendAndReceive(producerRecord,
-                Duration.ofSeconds(kafkaProperties.replyTimeoutSeconds))
+        val sendResult = replyTemplate.sendAndReceive(
+            producerRecord,
+            Duration.ofSeconds(kafkaProperties.replyTimeoutSeconds)
+        )
         log.debug("Send result from Kafka {}", sendResult)
         val response = sendResult.get(kafkaProperties.replyTimeoutSeconds, TimeUnit.SECONDS)
         return response?.value()

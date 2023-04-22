@@ -42,13 +42,5 @@ kafkaprops:
   consumerAutoReset: "latest"
   producerAckConfig: "1"
   debeziumOutboxTopicName: "events.public.crud_events"
-  backoff:
-    initial-interval: 500ms
-    max-interval: 2s
-    max-retries: 4
-    multiplier: 1.5
-  deadletter:
-    retention: 28d
-    suffix: .DLT
 urls:
   validator: http://localhost:8084

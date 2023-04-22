@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.format.annotation.DateTimeFormat
 import ru.aasmc.taskvalidator.util.DateProcessor
 import java.time.LocalDateTime
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "ranges")

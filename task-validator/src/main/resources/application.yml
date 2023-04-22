@@ -18,7 +18,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: "ru.aasmc.taskvalidator.dto.ValidationRequest"
-      group-id: ${topicprops.groupId}
+      group-id: ${kafkaprops.groupId}
   datasource:
     username: user
     password: password
@@ -35,6 +35,19 @@ spring:
         format_sql: true
         show_sql: true
 
-topicprops:
+kafkaprops:
+  partitions: 2
+  replicas: 2
+  groupId: ${spring.application.name}
   validateRequestTopic: "validate-request"
-  groupId: "validation-group"
+  bootstrapServers: localhost:29092, localhost:39092
+  producerAck: 1
+  consumerAutoOffsetReset: latest
+  backoff:
+    initial-interval: 500ms
+    max-interval: 2s
+    max-retries: 4
+    multiplier: 1.5
+  deadletter:
+    retention: 28d
+    suffix: .DLT
