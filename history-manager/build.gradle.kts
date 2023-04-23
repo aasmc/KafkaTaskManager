@@ -23,6 +23,9 @@ repositories {
     mavenCentral()
 }
 
+extra["testContainersVersion"] = "1.18.0"
+
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -32,9 +35,18 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.testcontainers:kafka")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
 
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testContainersVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {

@@ -1,11 +1,10 @@
-package ru.aasmc.taskvalidator.service.kafka
+package ru.aasmc.historymanager.events.service
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.header.Header
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.kafka.test.utils.KafkaTestUtils
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -24,25 +22,24 @@ import org.testcontainers.containers.KafkaContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import ru.aasmc.taskvalidator.dto.ValidationRequest
-import java.time.Duration
-import java.time.LocalDateTime
+import ru.aasmc.historymanager.loadJsonFromFile
 
-private const val DLT = "validate-request.DLT"
-private val log = LoggerFactory.getLogger(KafkaReplyServiceTest::class.java)
-private const val TOPIC = "validate-request"
+private const val DLT = "events.public.crud_events.DLT"
+private val log = LoggerFactory.getLogger(KafkaEventConsumerTest::class.java)
+private const val TOPIC = "events.public.crud_events"
+private const val VALID_EVENT = "events/valid.json"
+private const val INVALID_EVENT = "events/invalid.json"
 
 @SpringBootTest
 @ActiveProfiles("integration")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
-class KafkaReplyServiceTest {
+class KafkaEventConsumerTest {
 
     @Autowired
-    lateinit var template: KafkaTemplate<String, ValidationRequest>
+    private lateinit var template: KafkaTemplate<String, String>
 
     companion object {
-
         @Container
         @JvmStatic
         val kafka = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.1"))
@@ -59,11 +56,9 @@ class KafkaReplyServiceTest {
             registry.add("kafkaprops.bootstrapServers", kafka::getBootstrapServers)
         }
 
-        @BeforeAll
         @JvmStatic
+        @BeforeAll
         fun setup() {
-            // Create a test consumer that handles <String, String> records, listening to orders.DLT
-            // https://docs.spring.io/spring-kafka/docs/3.0.x/reference/html/#testing
             val consumerProps = KafkaTestUtils.consumerProps(
                 kafka.bootstrapServers,
                 "test-consumer",
@@ -75,51 +70,38 @@ class KafkaReplyServiceTest {
             kafkaConsumer.subscribe(listOf(DLT))
         }
 
-        @AfterAll
         @JvmStatic
+        @AfterAll
         fun close() {
-            // Close the consumer before shutting down Testcontainers Kafka instance
             kafkaConsumer.close()
         }
     }
 
     @Test
     fun should_not_send_to_dlt_for_valid_message() {
-        val validationRequest = ValidationRequest(LocalDateTime.now(), LocalDateTime.now(), 1)
-        val producerRecord = ProducerRecord<String, ValidationRequest>(TOPIC, validationRequest)
-        producerRecord.headers().add(KafkaHeaders.REPLY_TOPIC, "validate-response".toByteArray())
-        template.send(producerRecord)
-            .whenCompleteAsync {response, ex ->
-                if (ex == null) {
-                    log.info("Success: {}", response)
-                } else {
-                    log.error("FAILURE: {}", ex.message)
-                }
-            }
-
+        val eventString = loadJsonFromFile(VALID_EVENT)
+        template.send(TOPIC, eventString)
+            .addCallback(
+                { res -> log.info("Success: {}", res) },
+                { ex -> log.info("Failure: {}", ex.message) }
+            )
         assertThrows(
-            IllegalStateException::class.java,
+            IllegalStateException::class.java
         ) {
-            KafkaTestUtils.getSingleRecord(kafkaConsumer, DLT, Duration.ofSeconds(5))
+            KafkaTestUtils.getSingleRecord(kafkaConsumer, DLT, 5000L)
         }
     }
 
     @Test
     fun should_send_to_dlt_when_message_invalid() {
-        val validationRequest = ValidationRequest(LocalDateTime.now(), LocalDateTime.now(), -2)
-        val producerRecord = ProducerRecord<String, ValidationRequest>(TOPIC, validationRequest)
-        producerRecord.headers().add(KafkaHeaders.REPLY_TOPIC, "validate-response".toByteArray())
+        val eventString = loadJsonFromFile(INVALID_EVENT)
+        template.send(TOPIC, eventString)
+            .addCallback(
+                { res -> log.info("Success: {}", res) },
+                { ex -> log.info("Failure: {}", ex.message) }
+            )
 
-        template.send(producerRecord)
-            .whenCompleteAsync {response, ex ->
-                if (ex == null) {
-                    log.info("Success: {}", response)
-                } else {
-                    log.error("FAILURE: {}", ex.message)
-                }
-            }
-
-        val record = KafkaTestUtils.getSingleRecord(kafkaConsumer, DLT, Duration.ofSeconds(10))
+        val record = KafkaTestUtils.getSingleRecord(kafkaConsumer, DLT, 2000)
         val headers = record.headers()
         assertThat(headers).map<String, RuntimeException> { obj: Header -> obj.key() }
             .containsAll(
@@ -136,12 +118,36 @@ class KafkaReplyServiceTest {
                     "kafka_dlt-original-consumer-group"
                 )
             )
-
         assertThat(String(headers.lastHeader("kafka_dlt-exception-fqcn").value()))
             .isEqualTo("org.springframework.kafka.listener.ListenerExecutionFailedException")
         assertThat(String(headers.lastHeader("kafka_dlt-exception-cause-fqcn").value()))
-            .isEqualTo("org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException")
-        assertThat(String(headers.lastHeader("kafka_dlt-exception-message").value()))
-            .contains("Listener method could not be invoked with the incoming message")
+            .isEqualTo("com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException")
+        assertThat(record.value()).isEqualTo(eventString)
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

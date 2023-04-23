@@ -1,0 +1,15 @@
+{
+  "after": {
+    "invalid_id": 1,
+    "invalid_task_id": 2,
+    "name": "Event Name",
+    "description": "Event Description",
+    "task_status": "NEW",
+    "task_type": "TASK",
+    "duration": 10000,
+    "start_time": 10000000,
+    "invalid_event_date": 10000000,
+    "invalid_event_type": "TASK_CREATED",
+    "invalid_version": 0
+  }
+}

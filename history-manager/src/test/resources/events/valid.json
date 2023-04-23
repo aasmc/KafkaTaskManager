@@ -1,0 +1,15 @@
+{
+  "after": {
+    "id": 1,
+    "task_id": 2,
+    "name": "Event Name",
+    "description": "Event Description",
+    "task_status": "NEW",
+    "task_type": "TASK",
+    "duration": 10000,
+    "start_time": 10000000,
+    "event_date": 10000000,
+    "event_type": "TASK_CREATED",
+    "version": 0
+  }
+}

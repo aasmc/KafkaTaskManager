@@ -5,6 +5,11 @@ spring:
     name: history-manager
   kafka:
     bootstrap-servers: localhost:29092, localhost:39092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: localhost:29092, localhost:39092
     consumer:
       bootstrap-servers: localhost:29092, localhost:39092
       group-id: ${spring.application.name}
@@ -27,5 +32,15 @@ spring:
         format_sql: true
         show_sql: true
 
-events:
-  topicName: "events.public.crud_events"
+kafkaprops:
+  groupId: ${spring.application.name}
+  eventsTopicName: "events.public.crud_events"
+  bootstrapServers: localhost:29092, localhost:39092
+  backoff:
+    initial-interval: 500ms
+    max-interval: 2s
+    max-retries: 4
+    multiplier: 1.5
+  deadletter:
+    retention: 28d
+    suffix: .DLT
