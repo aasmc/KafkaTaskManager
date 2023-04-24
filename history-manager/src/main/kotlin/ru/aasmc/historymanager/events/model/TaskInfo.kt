@@ -29,4 +29,30 @@ class TaskInfo(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
     @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
     var startTime: LocalDateTime? = null
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TaskInfo
+
+        if (taskId != other.taskId) return false
+        if (name != other.name) return false
+        if (description != other.description) return false
+        if (taskStatus != other.taskStatus) return false
+        if (taskType != other.taskType) return false
+        if (duration != other.duration) return false
+        return startTime == other.startTime
+    }
+
+    override fun hashCode(): Int {
+        var result = taskId.hashCode()
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + (description?.hashCode() ?: 0)
+        result = 31 * result + (taskStatus?.hashCode() ?: 0)
+        result = 31 * result + (taskType?.hashCode() ?: 0)
+        result = 31 * result + (duration?.hashCode() ?: 0)
+        result = 31 * result + (startTime?.hashCode() ?: 0)
+        return result
+    }
+}

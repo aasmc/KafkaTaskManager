@@ -1,6 +1,9 @@
 package ru.aasmc.historymanager.events.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.header.Header
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -19,30 +22,35 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.KafkaContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
-import ru.aasmc.historymanager.loadJsonFromFile
+import ru.aasmc.historymanager.events.dto.EventDto
+import ru.aasmc.historymanager.events.dto.toDomain
+import ru.aasmc.historymanager.events.repository.EventRepository
+import ru.aasmc.historymanager.testutil.KAFKA_CONTAINER_NAME
+import ru.aasmc.historymanager.testutil.loadJsonFromFile
+import ru.aasmc.historymanager.testutil.reuseContainer
 
 private const val DLT = "events.public.crud_events.DLT"
 private val log = LoggerFactory.getLogger(KafkaEventConsumerTest::class.java)
 private const val TOPIC = "events.public.crud_events"
 private const val VALID_EVENT = "events/valid.json"
 private const val INVALID_EVENT = "events/invalid.json"
+private const val INVALID_EVENT_TASK_ID = 3L
 
 @SpringBootTest
 @ActiveProfiles("integration")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
-class KafkaEventConsumerTest {
-
+class KafkaEventConsumerTest(
     @Autowired
-    private lateinit var template: KafkaTemplate<String, String>
+    private val template: KafkaTemplate<String, String>,
+    @Autowired
+    private val objectMapper: ObjectMapper,
+    @Autowired
+    private val repo: EventRepository
+) {
 
     companion object {
-        @Container
         @JvmStatic
-        val kafka = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.1"))
+        val kafka: KafkaContainer = reuseContainer(KAFKA_CONTAINER_NAME)
 
         @JvmStatic
         private lateinit var kafkaConsumer: KafkaConsumer<String, String>
@@ -67,18 +75,19 @@ class KafkaEventConsumerTest {
             consumerProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
             consumerProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
             kafkaConsumer = KafkaConsumer(consumerProps)
-            kafkaConsumer.subscribe(listOf(DLT))
+            kafkaConsumer.subscribe(listOf(DLT, TOPIC))
         }
 
         @JvmStatic
         @AfterAll
         fun close() {
             kafkaConsumer.close()
+            kafka.stop()
         }
     }
 
     @Test
-    fun should_not_send_to_dlt_for_valid_message() {
+    fun valid_message_sent_to_normal_topic_DLT_empty_repo_contains_record() {
         val eventString = loadJsonFromFile(VALID_EVENT)
         template.send(TOPIC, eventString)
             .addCallback(
@@ -90,6 +99,18 @@ class KafkaEventConsumerTest {
         ) {
             KafkaTestUtils.getSingleRecord(kafkaConsumer, DLT, 5000L)
         }
+        val record = KafkaTestUtils.getSingleRecord(kafkaConsumer, TOPIC, 2000L)
+        assertThat(record.value()).isEqualTo(eventString)
+        val dto = convertToEventDto(record.value())
+        val allEvents = repo.findAllByTaskInfoTaskId(dto.taskId)
+        val domain = dto.toDomain()
+        assertThat(allEvents).contains(domain)
+    }
+
+    private fun convertToEventDto(eventString: String): EventDto {
+        val payload = objectMapper.readTree(eventString)
+        val afterNode = payload.get("after")
+        return objectMapper.treeToValue(afterNode, EventDto::class.java)
     }
 
     @Test
@@ -123,6 +144,9 @@ class KafkaEventConsumerTest {
         assertThat(String(headers.lastHeader("kafka_dlt-exception-cause-fqcn").value()))
             .isEqualTo("com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException")
         assertThat(record.value()).isEqualTo(eventString)
+
+        val events = repo.findAllByTaskInfoTaskId(INVALID_EVENT_TASK_ID)
+        assertThat(events).isEmpty()
     }
 
 }
