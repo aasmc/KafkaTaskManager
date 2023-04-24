@@ -12,12 +12,17 @@ class EventService(
         private val eventRepo: CrudEventsRepository
 ) {
 
-    fun saveEvent(type: CrudEventType, taskInfo: TaskInfo): CrudEvent {
-        return eventRepo.save(CrudEvent(
+    fun saveEvent(type: CrudEventType, taskInfo: TaskInfo) {
+        val saved = eventRepo.save(CrudEvent(
                 taskInfo = taskInfo,
                 eventDate = LocalDateTime.now(),
                 eventType = type
         ))
+        // immediately remove the event from DB so as not to occupy space:
+        // the event will be forwarded to Kafka topic by Debezium. Delete
+        // events will be ignored because of the setting in connector:
+        // "tombstones.on.delete" : "false"
+        eventRepo.deleteById(saved.id!!)
     }
 
 }

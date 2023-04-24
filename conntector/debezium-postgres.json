@@ -22,6 +22,7 @@
     "topic.creation.eventsgroup.partitions": 10,
     "topic.creation.eventsgroup.cleanup.policy": "delete",
     "topic.creation.eventsgroup.retention.ms": 7776000000,
-    "topic.creation.eventsgroup.compression.type": "lz4"
+    "topic.creation.eventsgroup.compression.type": "lz4",
+    "tombstones.on.delete" : "false"
   }
 }

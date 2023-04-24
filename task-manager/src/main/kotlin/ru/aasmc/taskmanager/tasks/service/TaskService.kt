@@ -64,8 +64,7 @@ class TaskService(
     fun createTask(task: Task): Task {
         validateTask(task)
         val created = taskRepo.save(task)
-        val event = eventService.saveEvent(CrudEventType.TASK_CREATED, task.toTaskInfo())
-        log.info("Created Event in TaskService {}", event)
+        eventService.saveEvent(CrudEventType.TASK_CREATED, task.toTaskInfo())
         return created
     }
 
