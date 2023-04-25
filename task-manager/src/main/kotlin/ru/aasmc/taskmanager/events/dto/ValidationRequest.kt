@@ -10,11 +10,11 @@ data class ValidationRequest(
         @JsonProperty("task_start_time")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
         @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
-        val taskStartTime: LocalDateTime,
+        val taskStartTime: LocalDateTime?,
         @JsonProperty("task_end_time")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
         @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
-        val taskEndTime: LocalDateTime,
+        val taskEndTime: LocalDateTime?,
         @JsonProperty("task_id")
-        val taskId: Long
+        val taskId: Long?
 )

@@ -10,9 +10,9 @@ data class DeleteTaskValidationRequest(
         @JsonProperty("start_time")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
         @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
-        val startTime: LocalDateTime,
+        val startTime: LocalDateTime?,
         @JsonProperty("end_time")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
         @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
-        val endTime: LocalDateTime
+        val endTime: LocalDateTime?
 )

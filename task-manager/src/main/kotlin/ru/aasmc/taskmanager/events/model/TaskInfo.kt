@@ -30,5 +30,9 @@ class TaskInfo(
     @Column(name = "start_time", nullable = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
     @DateTimeFormat(pattern = DateProcessor.DATE_FORMAT)
-    var startTime: LocalDateTime? = null
+    var startTime: LocalDateTime? = null,
+    @Column(name = "subtask_ids", nullable = true)
+    var subtaskIds: String? = null,
+    @Column(name = "parent_id")
+    var parentId: Long? = null
 )
