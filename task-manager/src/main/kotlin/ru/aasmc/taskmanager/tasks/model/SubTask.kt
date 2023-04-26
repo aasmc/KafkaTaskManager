@@ -10,7 +10,7 @@ import javax.persistence.Table
 @Table(name = "subtasks")
 class SubTask : BaseTask() {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     var parent: Epic? = null
 
     override fun equals(other: Any?): Boolean {

@@ -11,12 +11,12 @@ import ru.aasmc.taskmanager.tasks.exception.TaskIntersectionException
 import ru.aasmc.taskmanager.tasks.model.BaseTask
 
 abstract class BaseService<Entity: BaseTask, Repository: CrudRepository<Entity, Long>>(
-    private val repo: Repository,
-    private val validationService: ValidationService,
-    private val eventService: EventService
+    protected val repo: Repository,
+    protected val validationService: ValidationService,
+    protected val eventService: EventService
 ) {
 
-    fun getAllTasks(): List<Entity> {
+    open fun getAllTasks(): List<Entity> {
         val tasks = repo.findAll().toList()
         tasks.forEach { t ->
             eventService.saveEvent(CrudEventType.TASK_REQUESTED, t.toTaskInfo())
@@ -24,15 +24,15 @@ abstract class BaseService<Entity: BaseTask, Repository: CrudRepository<Entity, 
         return tasks
     }
 
-    fun deleteAllTasks() {
+    open fun deleteAllTasks() {
         repo.findAll().forEach { t ->
-            validationService.deleteValidationInfo(t)
+            deleteValidationInfo(t)
             eventService.saveEvent(CrudEventType.TASK_DELETED, t.toTaskInfo())
         }
         repo.deleteAll()
     }
 
-    fun getTaskById(id: Long): Entity {
+    open fun getTaskById(id: Long): Entity {
         val task = repo.findById(id)
             .orElseThrow { NoSuchTaskException("No task with ID: $id is found!") }
 
@@ -40,16 +40,19 @@ abstract class BaseService<Entity: BaseTask, Repository: CrudRepository<Entity, 
         return task
     }
 
-    fun createTask(task: Entity): Entity {
+    open fun createTask(task: Entity): Entity {
         validateTask(task)
         val created = repo.save(task)
         eventService.saveEvent(CrudEventType.TASK_CREATED, task.toTaskInfo())
         return created
     }
 
-    private fun validateTask(task: Entity) {
+    protected open fun validateTask(task: Entity) {
         val response = validationService.requestValidation(task)
+        validateInternal(response, task)
+    }
 
+    protected fun validateInternal(response: ValidationResponse?, task: Entity) {
         response?.let { resp ->
             if (validationFailed(resp)) {
                 throw TaskIntersectionException("Task with id ${task.id} intersects with other tasks.\n" +
@@ -60,24 +63,29 @@ abstract class BaseService<Entity: BaseTask, Repository: CrudRepository<Entity, 
                 "for task with id ${task.id}")
     }
 
-    private fun validationFailed(response: ValidationResponse): Boolean {
+
+    protected open fun validationFailed(response: ValidationResponse): Boolean {
         return response.result == ValidationResult.FAILURE
     }
 
-    fun updateTask(task: Entity): Entity {
-        validationService.deleteValidationInfo(task)
+    open fun updateTask(task: Entity): Entity {
+        deleteValidationInfo(task)
         validateTask(task)
         val updated = repo.save(task)
         eventService.saveEvent(CrudEventType.TASK_UPDATED, updated.toTaskInfo())
         return updated
     }
 
-    fun deleteById(id: Long) {
+    open fun deleteById(id: Long) {
         repo.findById(id).ifPresent { t ->
-            validationService.deleteValidationInfo(t)
+            deleteValidationInfo(t)
         }
         repo.deleteById(id)
         eventService.saveEvent(CrudEventType.TASK_DELETED, TaskInfo(taskId = id))
+    }
+
+    protected open fun deleteValidationInfo(t: Entity) {
+        validationService.deleteValidationInfo(t)
     }
 
 }

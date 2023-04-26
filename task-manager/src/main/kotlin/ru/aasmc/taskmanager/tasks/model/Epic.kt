@@ -3,10 +3,7 @@ package ru.aasmc.taskmanager.tasks.model
 import ru.aasmc.taskmanager.events.model.TaskInfo
 import java.time.LocalDateTime
 import java.util.*
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "epics")
@@ -27,9 +24,10 @@ class Epic : BaseTask() {
     @OneToMany(
         mappedBy = "parent",
         cascade = [CascadeType.ALL],
-        orphanRemoval = true
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
     )
-    var subtasks: MutableSet<SubTask> = hashSetOf()
+    var subtasks: MutableList<SubTask> = arrayListOf()
 
     fun addSubTask(subTask: SubTask) {
         subtasks.add(subTask)
@@ -43,7 +41,7 @@ class Epic : BaseTask() {
 
     private fun getStartTimeInternal(): LocalDateTime? {
         return subtasks.mapNotNull(SubTask::startTime)
-            .min()
+            .minOrNull()
     }
 
     private fun getTaskStatusInternal(): TaskStatus {

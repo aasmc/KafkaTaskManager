@@ -16,6 +16,7 @@
     "publication.name": "events_publication",
     "topic.creation.default.replication.factor": 2,
     "topic.creation.default.partitions": 10,
+    "topic.creation.default.cleanup.policy": "compact",
     "topic.creation.groups": "eventsgroup",
     "topic.creation.eventsgroup.include": "events\\.*",
     "topic.creation.eventsgroup.replication.factor": 2,
@@ -23,6 +24,7 @@
     "topic.creation.eventsgroup.cleanup.policy": "delete",
     "topic.creation.eventsgroup.retention.ms": 7776000000,
     "topic.creation.eventsgroup.compression.type": "lz4",
-    "tombstones.on.delete" : "false"
+    "drop.tombstones" : "false",
+    "tombstones.on.delete": "true"
   }
 }

@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.*
 import ru.aasmc.taskmanager.tasks.model.BaseTask
 import ru.aasmc.taskmanager.tasks.model.TaskCollection
 import ru.aasmc.taskmanager.tasks.service.BaseService
+import javax.validation.Valid
 
 abstract class BaseController<Entity: BaseTask>(
-    private val service: BaseService<Entity, *>
+    protected val service: BaseService<Entity, *>
 ) {
 
     companion object {
@@ -15,38 +16,38 @@ abstract class BaseController<Entity: BaseTask>(
     }
 
     @GetMapping
-    fun getAllTasks(): TaskCollection<Entity> {
+    open fun getAllTasks(): TaskCollection<Entity> {
         log.debug("Fetching all tasks!")
         val allTasks = service.getAllTasks()
         return TaskCollection(allTasks)
     }
 
     @GetMapping("/{id}")
-    fun getTaskById(@PathVariable("id") id: Long): Entity {
+    open fun getTaskById(@PathVariable("id") id: Long): Entity {
         log.debug("Searching for task with ID: $id.")
         return service.getTaskById(id)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteTaskById(@PathVariable("id") id: Long) {
+    open fun deleteTaskById(@PathVariable("id") id: Long) {
         log.debug("Deleting task by ID: $id.")
         service.deleteById(id)
     }
 
     @DeleteMapping
-    fun deleteAllTasks() {
+    open fun deleteAllTasks() {
         log.debug("Deleting all tasks.")
         service.deleteAllTasks()
     }
 
     @PostMapping
-    fun createTask(@RequestBody task: Entity): Entity {
+    open fun createTask(@Valid @RequestBody task: Entity): Entity {
         log.debug("Creating task $task")
         return service.createTask(task)
     }
 
     @PutMapping
-    fun updateTask(@RequestBody task: Entity): Entity {
+    open fun updateTask(@Valid @RequestBody task: Entity): Entity {
         log.debug("Updating task $task")
         return service.updateTask(task)
     }

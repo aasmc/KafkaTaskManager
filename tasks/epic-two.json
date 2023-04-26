@@ -1,0 +1,9 @@
+{
+  "name": "Epic Two",
+  "description": "Epic Two Description",
+  "taskStatus": "NEW",
+  "taskType": "EPIC",
+  "duration": 0,
+  "startTime": "2023-04-25 12:24",
+  "subtasks": []
+}

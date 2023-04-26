@@ -8,6 +8,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
+import javax.validation.constraints.NotNull
 
 @MappedSuperclass
 abstract class BaseTask{
@@ -18,17 +19,21 @@ abstract class BaseTask{
     var id: Long? = null
 
     @Column(name = "task_name", nullable = false)
+    @NotNull
     var name: String? = null
 
     @Column(nullable = false)
+    @NotNull
     var description: String? = null
 
     @Column(name = "task_status", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     var taskStatus: TaskStatus = TaskStatus.NEW
 
     @Column(name = "task_type", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     var taskType: TaskType = TaskType.TASK
 
     @Column(nullable = false)

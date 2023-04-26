@@ -33,3 +33,7 @@ kafkaprops:
   debeziumOutboxTopicName: "events.public.crud_events"
 urls:
   validator: http://localhost:8084
+
+logging:
+  level:
+    web: info
