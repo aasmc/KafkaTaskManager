@@ -21,7 +21,7 @@ class EpicService(
     override fun deleteAllTasks() {
         repo.findAll().forEach { epic ->
             eventService.saveEvent(CrudEventType.TASK_DELETED, epic.toTaskInfo())
-            epic.subtasks.forEach { sub ->
+            epic.subtasks?.forEach { sub ->
                 validationService.deleteValidationInfo(sub)
                 eventService.saveEvent(CrudEventType.TASK_DELETED, sub.toTaskInfo())
             }
@@ -30,14 +30,14 @@ class EpicService(
     }
 
     override fun validateTask(task: Epic) {
-        task.subtasks.map(validationService::requestValidation)
-                .forEach { response ->
+        task.subtasks?.map(validationService::requestValidation)
+                ?.forEach { response ->
                     validateInternal(response, task)
                 }
     }
 
     override fun deleteValidationInfo(t: Epic) {
-        t.subtasks.forEach(validationService::deleteValidationInfo)
+        t.subtasks?.forEach(validationService::deleteValidationInfo)
     }
 
     override fun deleteById(id: Long) {
@@ -45,7 +45,7 @@ class EpicService(
         repo.findById(id).ifPresent { e ->
             epic = e
             deleteValidationInfo(e)
-            e.subtasks.forEach { sub ->
+            e.subtasks?.forEach { sub ->
                 eventService.saveEvent(CrudEventType.TASK_DELETED, sub.toTaskInfo())
             }
         }
@@ -60,7 +60,7 @@ class EpicService(
                 .orElseThrow {
                     NoSuchTaskException("Epic with ID: $id is not found!")
                 }
-        val subsList = epic.subtasks.toList()
+        val subsList = epic.subtasks?.toList() ?: emptyList()
         subsList.forEach { sub ->
             eventService.saveEvent(CrudEventType.TASK_REQUESTED, sub.toTaskInfo())
         }

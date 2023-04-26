@@ -13,8 +13,8 @@ class Epic : BaseTask() {
         get() = getTaskStatusInternal()
         set(value) {}
     override fun endTime(): LocalDateTime? {
-        return subtasks.mapNotNull(SubTask::endTime)
-            .maxOfOrNull { it }
+        return subtasks?.mapNotNull(SubTask::endTime)
+            ?.maxOfOrNull { it }
     }
 
     override var startTime: LocalDateTime?
@@ -27,27 +27,27 @@ class Epic : BaseTask() {
         orphanRemoval = true,
         fetch = FetchType.EAGER
     )
-    var subtasks: MutableList<SubTask> = arrayListOf()
+    var subtasks: MutableList<SubTask>? = mutableListOf()
 
     fun addSubTask(subTask: SubTask) {
-        subtasks.add(subTask)
+        subtasks?.add(subTask)
         subTask.parent = this
     }
 
     fun removeSubtask(subTask: SubTask) {
-        subtasks.remove(subTask)
+        subtasks?.remove(subTask)
         subTask.parent = null
     }
 
     private fun getStartTimeInternal(): LocalDateTime? {
-        return subtasks.mapNotNull(SubTask::startTime)
-            .minOrNull()
+        return subtasks?.mapNotNull(SubTask::startTime)
+            ?.minOrNull()
     }
 
     private fun getTaskStatusInternal(): TaskStatus {
         var isNew = true
         var isDone = true
-        subtasks.forEach { s ->
+        subtasks?.forEach { s ->
             val status = s.taskStatus
             isNew = isNew && status == TaskStatus.NEW
             isDone = isDone && status == TaskStatus.DONE
@@ -101,7 +101,7 @@ class Epic : BaseTask() {
             taskType = taskType,
             duration = duration,
             startTime = startTime,
-            subtaskIds = subtasks.joinToString(separator = ",")
+            subtaskIds = subtasks?.joinToString(separator = ",")
         )
     }
 }
