@@ -6,11 +6,12 @@ import ru.aasmc.taskmanager.events.dto.ValidationResult
 import ru.aasmc.taskmanager.events.model.CrudEventType
 import ru.aasmc.taskmanager.events.model.TaskInfo
 import ru.aasmc.taskmanager.events.service.kafka.ValidationService
+import ru.aasmc.taskmanager.tasks.dto.Controllable
 import ru.aasmc.taskmanager.tasks.exception.NoSuchTaskException
 import ru.aasmc.taskmanager.tasks.exception.TaskIntersectionException
 import ru.aasmc.taskmanager.tasks.model.BaseTask
 
-abstract class BaseService<Entity: BaseTask, Repository: CrudRepository<Entity, Long>>(
+abstract class BaseService<DTO: Controllable, Entity: BaseTask, Repository: CrudRepository<Entity, Long>>(
     protected val repo: Repository,
     protected val validationService: ValidationService,
     protected val eventService: EventService

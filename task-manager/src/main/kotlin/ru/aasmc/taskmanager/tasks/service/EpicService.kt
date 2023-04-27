@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import ru.aasmc.taskmanager.events.model.CrudEventType
 import ru.aasmc.taskmanager.events.model.TaskInfo
 import ru.aasmc.taskmanager.events.service.kafka.ValidationService
+import ru.aasmc.taskmanager.tasks.dto.EpicDto
 import ru.aasmc.taskmanager.tasks.exception.NoSuchTaskException
 import ru.aasmc.taskmanager.tasks.model.Epic
 import ru.aasmc.taskmanager.tasks.model.SubTask
@@ -16,7 +17,7 @@ class EpicService(
         epicRepository: EpicRepository,
         eventService: EventService,
         validationService: ValidationService
-) : BaseService<Epic, EpicRepository>(epicRepository, validationService, eventService) {
+) : BaseService<EpicDto, Epic, EpicRepository>(epicRepository, validationService, eventService) {
 
     override fun deleteAllTasks() {
         repo.findAll().forEach { epic ->

@@ -2,13 +2,14 @@ package ru.aasmc.taskmanager.tasks.controller
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
+import ru.aasmc.taskmanager.tasks.dto.Controllable
 import ru.aasmc.taskmanager.tasks.model.BaseTask
 import ru.aasmc.taskmanager.tasks.model.TaskCollection
 import ru.aasmc.taskmanager.tasks.service.BaseService
 import javax.validation.Valid
 
-abstract class BaseController<Entity: BaseTask>(
-    protected val service: BaseService<Entity, *>
+abstract class BaseController<DTO: Controllable, Entity: BaseTask>(
+    protected val service: BaseService<DTO, Entity, *>
 ) {
 
     companion object {

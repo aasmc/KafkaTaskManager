@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import ru.aasmc.taskmanager.tasks.dto.SubtaskDto
 import ru.aasmc.taskmanager.tasks.model.Epic
 import ru.aasmc.taskmanager.tasks.model.SubTask
 import ru.aasmc.taskmanager.tasks.service.SubTaskService
@@ -15,7 +16,7 @@ private val log = LoggerFactory.getLogger(SubtaskController::class.java)
 @RequestMapping("/subtasks")
 class SubtaskController(
         private val subTaskService: SubTaskService
-): BaseController<SubTask>(subTaskService) {
+): BaseController<SubtaskDto, SubTask>(subTaskService) {
 
     @GetMapping("/{id}/epic")
     fun getEpicOfSubTask(@PathVariable("id") id: Long): Epic {

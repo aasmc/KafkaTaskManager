@@ -1,6 +1,7 @@
 package ru.aasmc.taskmanager.tasks.controller
 
 import org.springframework.web.bind.annotation.*
+import ru.aasmc.taskmanager.tasks.dto.TaskDto
 import ru.aasmc.taskmanager.tasks.model.Task
 import ru.aasmc.taskmanager.tasks.service.TaskService
 
@@ -9,6 +10,6 @@ import ru.aasmc.taskmanager.tasks.service.TaskService
 @RequestMapping("/tasks")
 class TaskController(
     service: TaskService
-): BaseController<Task>(service) {
+): BaseController<TaskDto, Task>(service) {
 
 }

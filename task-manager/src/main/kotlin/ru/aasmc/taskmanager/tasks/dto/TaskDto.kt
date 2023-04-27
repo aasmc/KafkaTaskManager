@@ -23,4 +23,8 @@ data class TaskDto(
     @JsonProperty("start_time", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateProcessor.DATE_FORMAT)
     val startTime: LocalDateTime
-)
+): Controllable {
+    override fun id(): Long? {
+        return id
+    }
+}
