@@ -11,7 +11,7 @@ import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @MappedSuperclass
-abstract class BaseTask{
+abstract class BaseTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
