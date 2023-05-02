@@ -1,8 +1,8 @@
 {
   "name": "Task Three",
   "description": "Task Three Description",
-  "taskStatus": "NEW",
-  "taskType": "TASK",
+  "task_status": "NEW",
+  "task_type": "TASK",
   "duration": 10000,
-  "startTime": "2023-07-18 12:24"
+  "start_time": "2023-07-18 12:24"
 }

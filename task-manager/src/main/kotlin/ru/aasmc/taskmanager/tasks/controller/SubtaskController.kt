@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import ru.aasmc.taskmanager.tasks.dto.EpicDto
 import ru.aasmc.taskmanager.tasks.dto.SubtaskDto
 import ru.aasmc.taskmanager.tasks.model.Epic
 import ru.aasmc.taskmanager.tasks.model.SubTask
@@ -19,7 +20,7 @@ class SubtaskController(
 ): BaseController<SubtaskDto, SubTask>(subTaskService) {
 
     @GetMapping("/{id}/epic")
-    fun getEpicOfSubTask(@PathVariable("id") id: Long): Epic {
+    fun getEpicOfSubTask(@PathVariable("id") id: Long): EpicDto {
         log.debug("Fetching Epic of Subtask with id: $id")
         return subTaskService.getEpicOfSubTask(id)
     }

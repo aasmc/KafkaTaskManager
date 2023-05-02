@@ -1,5 +1,7 @@
 package ru.aasmc.taskmanager.tasks.model
 
-data class TaskCollection<Entity: BaseTask>(
-    val tasks: List<Entity>
+import ru.aasmc.taskmanager.tasks.dto.BaseDto
+
+data class TaskCollection<DTO: BaseDto>(
+    val tasks: List<DTO>
 )

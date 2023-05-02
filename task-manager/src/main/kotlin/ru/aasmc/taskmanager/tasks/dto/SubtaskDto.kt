@@ -23,7 +23,7 @@ data class SubtaskDto(
     val startTime: LocalDateTime,
     @JsonProperty("parent_id")
     val parentId: Long
-): Controllable {
+): BaseDto {
     override fun id(): Long? {
         return id
     }

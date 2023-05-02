@@ -27,7 +27,7 @@ class Epic : BaseTask() {
         orphanRemoval = true,
         fetch = FetchType.EAGER
     )
-    var subtasks: MutableList<SubTask>? = mutableListOf()
+    var subtasks: MutableSet<SubTask>? = mutableSetOf()
 
     fun addSubTask(subTask: SubTask) {
         subtasks?.add(subTask)
@@ -93,6 +93,10 @@ class Epic : BaseTask() {
     }
 
     override fun toTaskInfo(): TaskInfo {
+        val sb = StringBuilder()
+        subtasks?.forEach { s ->
+            sb.append("${s.id},")
+        }
         return TaskInfo(
             taskId = id ?: 0,
             name = name,
@@ -101,7 +105,7 @@ class Epic : BaseTask() {
             taskType = taskType,
             duration = duration,
             startTime = startTime,
-            subtaskIds = subtasks?.joinToString(separator = ",")
+            subtaskIds = sb.toString()
         )
     }
 }

@@ -1,9 +1,9 @@
 {
   "name": "Sub Three",
   "description": "Sub Three Description",
-  "taskStatus": "NEW",
-  "taskType": "SUBTASK",
+  "task_status": "NEW",
+  "task_type": "SUBTASK",
   "duration": 10000,
-  "startTime": "2023-10-24 12:24",
-  "parent": 3
+  "start_time": "2023-10-24 12:24",
+  "parent_id": 1
 }

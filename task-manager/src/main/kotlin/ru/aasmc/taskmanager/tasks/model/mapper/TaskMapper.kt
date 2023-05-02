@@ -18,4 +18,15 @@ class TaskMapper : IMapper<Task, TaskDto> {
             startTime = dto.startTime
         }
     }
+
+    override fun toDto(entity: Task): TaskDto {
+        return TaskDto(
+            id = entity.id,
+            name = entity.name.orEmpty(),
+            description = entity.description.orEmpty(),
+            taskStatus = entity.taskStatus,
+            duration = entity.duration ?: 0,
+            startTime = entity.startTime!!
+        )
+    }
 }

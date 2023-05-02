@@ -23,7 +23,7 @@ data class EpicDto(
     val startTime: LocalDateTime? = null,
     @JsonProperty("subtask_ids")
     val subtaskIds: List<Long>
-): Controllable {
+): BaseDto {
     override fun id(): Long? {
         return id
     }

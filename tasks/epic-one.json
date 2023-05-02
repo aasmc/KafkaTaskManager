@@ -1,9 +1,9 @@
 {
   "name": "Epic One",
   "description": "Epic One Description",
-  "taskStatus": "NEW",
-  "taskType": "EPIC",
+  "task_status": "NEW",
+  "task_type": "EPIC",
   "duration": 10,
-  "startTime": "2023-04-27 12:24",
-  "subtasks": null
+  "start_time": "2023-04-27 12:24",
+  "subtask_ids": []
 }

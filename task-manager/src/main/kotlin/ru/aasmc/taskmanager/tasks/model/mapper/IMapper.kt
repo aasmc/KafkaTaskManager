@@ -1,5 +1,9 @@
 package ru.aasmc.taskmanager.tasks.model.mapper
 
-interface IMapper<Entity, Dto> {
+import ru.aasmc.taskmanager.tasks.dto.BaseDto
+
+interface IMapper<Entity, Dto: BaseDto> {
     fun toEntity(dto: Dto): Entity
+
+    fun toDto(entity: Entity): Dto
 }

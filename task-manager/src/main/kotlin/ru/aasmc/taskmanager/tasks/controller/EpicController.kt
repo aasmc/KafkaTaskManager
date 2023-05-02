@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.aasmc.taskmanager.tasks.dto.EpicDto
+import ru.aasmc.taskmanager.tasks.dto.SubtaskDto
 import ru.aasmc.taskmanager.tasks.model.Epic
 import ru.aasmc.taskmanager.tasks.model.SubTask
 import ru.aasmc.taskmanager.tasks.model.TaskCollection
@@ -19,7 +20,7 @@ class EpicController(
 ): BaseController<EpicDto, Epic>(epicService) {
 
     @GetMapping("/{id}/subtasks")
-    fun getSubtasksOfEpic(@PathVariable("id") id: Long): TaskCollection<SubTask> {
+    fun getSubtasksOfEpic(@PathVariable("id") id: Long): TaskCollection<SubtaskDto> {
         log.debug("Fetching all subtasks of Epic with id: $id")
         val allSubs = epicService.getAllSubtasksOfEpic(id)
         return TaskCollection(allSubs)

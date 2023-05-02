@@ -2,6 +2,7 @@ package ru.aasmc.taskvalidator.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.aasmc.taskvalidator.dto.DeleteTaskValidationRequest
 import ru.aasmc.taskvalidator.dto.ValidationRequest
 import ru.aasmc.taskvalidator.dto.ValidationResponse
@@ -35,9 +36,10 @@ class ValidationService(
         return ValidationResponse(request.taskId, result)
     }
 
+    @Transactional
     fun deleteValidationInfo(deleteRequest: DeleteTaskValidationRequest) {
         log.info("Deleting validation information for request: $deleteRequest")
-        repo.deleteRangeByEndAndStart(deleteRequest.startTime, deleteRequest.endTime)
+        repo.deleteRangeByStartAndEnd(deleteRequest.startTime, deleteRequest.endTime)
     }
 
     private fun rangeValid(result: ValidationResult): Boolean {
